@@ -26,17 +26,11 @@ Inspired by awesome [nikic aticle](https://nikic.github.io/2012/12/22/Cooperativ
     #get the code
     git clone https://github.com/zavalit/corouser.git
     
-    #go to Dockerfile
-    cd corouser/docker
-    
-    #build an image
-    docker build -t corouser/server .
-    
-    #get back to project root
-    cd ..
+    #go to the source code
+    cd corouser
     
     #and run a container
-    docker run -d -p 8081:8081 -v $PWD:/var/www  corouser/server
+    docker run -d -p 8081:8081 -v $PWD:/var/www  zavalit/corouser
     
 #### And simply call it 
 in a browser
