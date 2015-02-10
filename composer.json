@@ -1,0 +1,17 @@
+{
+    "name": "zavalit/corouser",
+    "description": "Coroutine based server",
+    "authors": [
+        {
+            "name": "Vsevolod Dolgopolov",
+            "email": "zavalit@gmail.com"
+        }
+    ],
+    "minimum-stability": "alpha",
+    "require": {"php": ">=5.5"},
+    "autoload": {
+      "psr-4":{
+        "": "src/"
+      }
+    }
+}
