@@ -38,7 +38,11 @@ Inspired by awesome [nikic aticle](https://nikic.github.io/2012/12/22/Cooperativ
     #and run a container
     docker run -d -p 8081:8081 -v $PWD:/var/www  corouser/server
     
-#### And finaly run it
+#### And simply call it 
+in a browser
 
     http://localhost:8081
      
+or benchmark it
+
+    ab -n 10000 -c 1000 http://0.0.0.0:8081/    
