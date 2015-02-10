@@ -1,12 +1,14 @@
 <?php
 
-require_once 'Schedule.php';
-require_once 'Task.php';
-require_once 'SystemCall.php';
-require_once 'CoroutineReturnValue.php';
-require_once 'CoSocket.php';
+require_once __DIR__ . "/../vendor/autoload.php";
 require_once 'retval.php';
 require_once 'stackedCoroutine.php';
+
+use \Schedule;
+use \Task;
+use \SystemCall;
+use \CoroutineReturnValue;
+use \CoSocket;
 
 function newTask(Generator $coroutine)
 {
