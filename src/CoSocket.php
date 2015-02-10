@@ -1,6 +1,5 @@
 <?php
 
-require_once 'retval.php';
 
 class CoSocket
 {

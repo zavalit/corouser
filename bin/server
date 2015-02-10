@@ -1,4 +1,12 @@
 #!/usr/bin/env php
 <?php
 
-echo "server";
+define('COROUSER_BIN_PATH', __FILE__);
+
+if(!file_exists(__DIR__.'/../vendor/autoload.php')){
+  throw new Exception('You need a composer autoload for that');
+}
+
+require_once  (__DIR__.'/../vendor/autoload.php');
+
+call_user_func((new Server), isset($argv[1])?$argv[1]:8081);
