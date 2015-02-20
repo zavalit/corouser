@@ -17,7 +17,9 @@ class StreamSchedule
   public function __construct(Schedule $schedule)
   {
     $this->schedule = $schedule;
-    $schedule->registerClient($this);
+    $schedule->registerClient($this); 
+    $this->wait_for_read = new SocketsWaitList();
+    $this->wait_for_write = new SocketsWaitList();
   }
 
   public function msgFromSchedule($msg, $args)
@@ -33,37 +35,19 @@ class StreamSchedule
 
   public function waitForRead($socket, Task $task)
   {
-    $socket_id = (int) $socket;
-    if(isset($this->wait_for_read[$socket_id])){
-      $this->wait_for_read[$socket_id][1][] = $task;
-    }
-    else{
-      $this->wait_for_read[$socket_id] = [$socket, [$task]];
-    }
+    $this->wait_for_read->addSocketTask($socket, $task);
   }
 
   public function waitForWrite($socket, Task $task)
   { 
-    $socket_id = (int) $socket;
-    if(isset($this->wait_for_write[$socket_id])){
-      $this->wait_for_write[$socket_id][1][] = $task;
-    }
-    else{
-      $this->wait_for_write[$socket_id] = [$socket, [$task]];
-    }
+    $this->wait_for_write->addSocketTask($socket, $task);
   }
 
   protected function ioPoll($timeout)
   {
-    $rSocks = [];
-    foreach($this->wait_for_read as list($socket)){
-      $rSocks[] = $socket;
-    }
+    $rSocks = $this->wait_for_read->getSockets();
 
-    $wSocks = [];
-    foreach($this->wait_for_write as list($socket)){
-      $wSocks[] = $socket;
-    }
+    $wSocks = $this->wait_for_write->getSockets();
 
     $eSocks = [];
 
@@ -71,27 +55,26 @@ class StreamSchedule
       return;  
     }
 
-    foreach($rSocks as $socket){
-      list(, $tasks) = $this->wait_for_read[(int)$socket];
-      unset($this->wait_for_read[(int)$socket]);
+    $this->scheduleReadTasks($rSocks);
 
-      foreach($tasks as $task)
-      {
-        $this->schedule->scheduleTask($task);
-      }
-
-    }
+    $this->scheduleWriteTasks($wSocks);
   
-    foreach($wSocks as $socket){
-      list(, $tasks) = $this->wait_for_write[(int)$socket];
-      unset($this->wait_for_write[(int)$socket]);
+  }
 
-      foreach($tasks as $task)
-      {
+  protected function scheduleReadTasks(array $sockets)
+  {
+    foreach($this->wait_for_read->purgeSocketsAndGetTasks($sockets) as $task)
+    {
         $this->schedule->scheduleTask($task);
-      }
     }
-  
+  }
+
+  protected function scheduleWriteTasks(array $sockets)
+  {
+    foreach($this->wait_for_write->purgeSocketsAndGetTasks($sockets) as $task)
+    {
+        $this->schedule->scheduleTask($task);
+    }
   }
 
   protected function ioPollTask()
