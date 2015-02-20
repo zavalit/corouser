@@ -1,9 +1,9 @@
 <?php
 
-namespace Streamer;
+namespace Corouser\Streamer;
 
-use Scheduler\Task;
-use Scheduler\Schedule;
+use Corouser\Scheduler\Task;
+use Corouser\Scheduler\Schedule;
 
 class StreamSchedule
 {

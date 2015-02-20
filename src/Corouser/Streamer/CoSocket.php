@@ -1,6 +1,6 @@
 <?php
 
-namespace Streamer;
+namespace Corouser\Streamer;
 
 class CoSocket
 {
@@ -40,19 +40,19 @@ class CoSocket
 
 function retval($value)
 {
-  return new \Scheduler\CoroutineReturnValue($value);
+  return new \Corouser\Scheduler\CoroutineReturnValue($value);
 }
 
 function waitForRead($socket)
 {
-  return new \Scheduler\SystemCall(function(\Scheduler\Task $task, \Scheduler\Schedule $schedule) use ($socket){
+  return new \Corouser\Scheduler\SystemCall(function(\Corouser\Scheduler\Task $task, \Corouser\Scheduler\Schedule $schedule) use ($socket){
     $schedule->talkToClient('waitForRead', array($socket, $task));
   });
 }
 
 function waitForWrite($socket)
 {
-  return new \Scheduler\SystemCall(function(\Scheduler\Task $task, \Scheduler\Schedule $schedule) use ($socket){
+  return new \Corouser\Scheduler\SystemCall(function(\Corouser\Scheduler\Task $task, \Corouser\Scheduler\Schedule $schedule) use ($socket){
     $schedule->talkToClient('waitForWrite', array($socket, $task));
   });
 }

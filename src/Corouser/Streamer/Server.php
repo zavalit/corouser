@@ -1,14 +1,14 @@
 <?php
 
-namespace Streamer;
+namespace Corouser\Streamer;
 
-use Scheduler\Schedule;
-use Scheduler\Task;
-use Scheduler\SystemCall;
-use Scheduler\CoroutineReturnValue;
+use Corouser\Scheduler\Schedule;
+use Corouser\Scheduler\Task;
+use Corouser\Scheduler\SystemCall;
+use Corouser\Scheduler\CoroutineReturnValue;
 
-use Streamer\CoSocket;
-use Streamer\StreamSchedule;
+use Corouser\Streamer\CoSocket;
+use Corouser\Streamer\StreamSchedule;
 
 class Server
 {
