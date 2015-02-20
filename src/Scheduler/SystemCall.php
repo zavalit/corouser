@@ -1,7 +1,6 @@
 <?php
 
-require_once __DIR__ . "/Task.php";
-require_once __DIR__ . "/Schedule.php";
+namespace Scheduler;
 
 class SystemCall
 {

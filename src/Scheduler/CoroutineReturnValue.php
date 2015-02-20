@@ -1,5 +1,7 @@
 <?php
 
+namespace Scheduler;
+
 class CoroutineReturnValue
 {
   protected $value;

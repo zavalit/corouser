@@ -16,4 +16,4 @@ if ((!$loader = includeIfExists(__DIR__.'/../vendor/autoload.php')) && (!$loader
     );
 }
 
-call_user_func((new Server), isset($argv[1])?$argv[1]:8081);
+call_user_func((new Streamer\Server), isset($argv[1])?$argv[1]:8081);
