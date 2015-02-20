@@ -8,18 +8,17 @@ use Corouser\Scheduler\Schedule;
 class StreamSchedule
 {
 
-  public function __construct(Schedule $schedule)
-  {
-    $this->schedule = $schedule;
-    $schedule->registerClient($this);
-  }
-
-
   protected $schedule;
 
   protected $wait_for_read = array();
 
   protected $wait_for_write = array();
+
+  public function __construct(Schedule $schedule)
+  {
+    $this->schedule = $schedule;
+    $schedule->registerClient($this);
+  }
 
   public function msgFromSchedule($msg, $args)
   {
@@ -56,7 +55,6 @@ class StreamSchedule
 
   protected function ioPoll($timeout)
   {
-    
     $rSocks = [];
     foreach($this->wait_for_read as list($socket)){
       $rSocks[] = $socket;
