@@ -12,6 +12,7 @@ use Corouser\Streamer\StreamSchedule;
 
 class Server
 {
+  use \Corouser\Scheduler\NewTaskTrait;
 
   public function __invoke($port=8081)
   {
@@ -36,7 +37,7 @@ class Server
      $coSocket = new CoSocket($socket);
    
      while(true){
-       yield newTask(
+       yield self::newTask(
          $this->handleClient(yield $coSocket->accept())
        );   
      }
@@ -65,15 +66,3 @@ RES;
   }
 
 }
-
-
-function newTask(\Generator $coroutine)
-{
-  return new SystemCall(function(Task $task, Schedule $schedule) use ($coroutine){
-    $task->setSendValue($schedule->addTask($coroutine));
-    $schedule->scheduleTask($task);
-  });
-}
-
-
-

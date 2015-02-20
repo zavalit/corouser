@@ -29,7 +29,6 @@ class Schedule
   }
 
 
-
   public function addTask(\Generator $coroutine)
   {
     $task_id = ++$this->task_id_iterator;
@@ -55,8 +54,6 @@ class Schedule
 
   public function run()
   {
-
-
     while(!$this->taskQueue->isEmpty())
     {
       $task = $this->taskQueue->dequeue();
