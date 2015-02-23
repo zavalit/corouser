@@ -2,93 +2,161 @@
 
 namespace Corouser\Streamer;
 
-use Corouser\Scheduler\Task;
-use Corouser\Scheduler\Schedule;
+use Corouser\Scheduler\TaskInterface;
+use Corouser\Scheduler\ScheduleInterface;
+use Corouser\Scheduler\ScheduleClientInterface;
 
-class StreamSchedule
+/**
+ * Schedule Client for Streaming
+ *
+ * @see ScheduleClientInterface
+ * @author Vsevolod Dolgopolov <zavalit@gmail.com>
+ */
+class StreamSchedule implements ScheduleClientInterface
 {
+    /**
+     * Schedule
+     *
+     * @var ScheduleInterface
+     */
+    protected $schedule;
 
-  protected $schedule;
+    /**
+     * sockets and relevant tasks waiting to be read
+     *
+     * @var array
+     */
+    protected $wait_for_read = array();
 
-  protected $wait_for_read = array();
+    /**
+     * sockets and relevant tasks waiting to be written
+     *
+     * @var array
+     */
+    protected $wait_for_write = array();
 
-  protected $wait_for_write = array();
-
-  public function __construct(Schedule $schedule)
-  {
-    $this->schedule = $schedule;
-    $schedule->registerClient($this); 
-    $this->wait_for_read = new SocketsWaitList();
-    $this->wait_for_write = new SocketsWaitList();
-  }
-
-  public function msgFromSchedule($msg, $args)
-  {
-    return call_user_func_array(array($this, $msg), $args);
-  }
-
-  public function run()
-  {
-    $this->schedule->addTask($this->ioPollTask());
-    $this->schedule->run();
-  }
-
-  public function waitForRead($socket, Task $task)
-  {
-    $this->wait_for_read->addSocketTask($socket, $task);
-  }
-
-  public function waitForWrite($socket, Task $task)
-  { 
-    $this->wait_for_write->addSocketTask($socket, $task);
-  }
-
-  protected function ioPoll($timeout)
-  {
-    $rSocks = $this->wait_for_read->getSockets();
-
-    $wSocks = $this->wait_for_write->getSockets();
-
-    $eSocks = [];
-
-    if(!@stream_select($rSocks, $wSocks, $eSocks, $timeout)){
-      return;  
-    }
-
-    $this->scheduleReadTasks($rSocks);
-
-    $this->scheduleWriteTasks($wSocks);
-  
-  }
-
-  protected function scheduleReadTasks(array $sockets)
-  {
-    foreach($this->wait_for_read->purgeSocketsAndGetTasks($sockets) as $task)
+    /**
+     * init StreamSchedule
+     *
+     * @param ScheduleInterface $schedule scheduler that executes tasks
+     * @return void
+     */
+    public function __construct(ScheduleInterface $schedule)
     {
-        $this->schedule->scheduleTask($task);
+        $this->schedule = $schedule;
+        $schedule->registerClient($this);
+        $this->wait_for_read  = new SocketsWaitList();
+        $this->wait_for_write = new SocketsWaitList();
     }
-  }
 
-  protected function scheduleWriteTasks(array $sockets)
-  {
-    foreach($this->wait_for_write->purgeSocketsAndGetTasks($sockets) as $task)
+    /**
+     * message notifed by scheduler
+     *
+     * @param mixed $msg  message
+     * @param array $args arguments
+     * @return mixed
+     */
+    public function msgFromSchedule($msg, array $args)
     {
-        $this->schedule->scheduleTask($task);
+        return call_user_func_array(array($this, $msg), $args);
     }
-  }
 
-  protected function ioPollTask()
-  {
-    while(true){
-      if($this->schedule->getTaskQueue()->isEmpty()){
-        $this->ioPoll(null);
-      }else{
-        $this->ioPoll(0);
-      }
-      yield;
-      
+    /**
+     * run scheduling
+     * @return void
+     */
+    public function run()
+    {
+        $this->schedule->addTask($this->ioPollTask());
+        $this->schedule->run();
     }
-  }
 
-  
+    /**
+     * fill waiting read sockets with task
+     *
+     * @param resource      $socket socket
+     * @param TaskInterface $task   task
+     * @return void
+     */
+    public function waitForRead($socket, TaskInterface $task)
+    {
+        $this->wait_for_read->addSocketTask($socket, $task);
+    }
+
+    /**
+     * fill waiting write sockets with task
+     *
+     * @param resource      $socket socket
+     * @param TaskInterface $task   task
+     * @return void
+     */
+    public function waitForWrite($socket, TaskInterface $task)
+    {
+        $this->wait_for_write->addSocketTask($socket, $task);
+    }
+
+    /**
+     * resolve waiting sockets and scheduling them
+     *
+     * @param int $timeout timeout
+     * @return void
+     */
+    protected function ioPoll($timeout)
+    {
+        $rSocks = $this->wait_for_read->getSockets();
+
+        $wSocks = $this->wait_for_write->getSockets();
+
+        $eSocks = [];
+
+        if (!@stream_select($rSocks, $wSocks, $eSocks, $timeout)) {
+            return;
+        }
+
+        $this->scheduleReadTasks($rSocks);
+
+        $this->scheduleWriteTasks($wSocks);
+    }
+
+    /**
+     * schedule read tasks
+     *
+     * @param array $sockets sockets
+     * @return void
+     */
+    protected function scheduleReadTasks(array $sockets)
+    {
+        foreach ($this->wait_for_read->purgeSocketsAndGetTasks($sockets) as $task) {
+            $this->schedule->scheduleTask($task);
+        }
+    }
+
+    /**
+     * schedule write tasks
+     *
+     * @param array $sockets sockets
+     * @return void
+     */
+    protected function scheduleWriteTasks(array $sockets)
+    {
+        foreach ($this->wait_for_write->purgeSocketsAndGetTasks($sockets) as $task) {
+            $this->schedule->scheduleTask($task);
+        }
+    }
+
+    /**
+     * entry task for socket select
+     * @return \Generator
+     */
+    protected function ioPollTask()
+    {
+        while (true) {
+            if ($this->schedule->getTaskQueue()->isEmpty()) {
+                $this->ioPoll(null);
+            } else {
+                $this->ioPoll(0);
+            }
+            yield;
+        }
+    }
 }
