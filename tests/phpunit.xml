@@ -1,0 +1,9 @@
+<phpunit bootstrap="../vendor/autoload.php"
+         colors="true"
+         convertNoticesToExceptions="true">
+  <testsuites>
+     <testsuite name="corouser test suite">
+       <directory>.</directory>
+     </testsuite>
+   </testsuites>
+</phpunit>
