@@ -1,6 +1,7 @@
 # Corouser 
 
 
+[![Build Status](https://travis-ci.org/zavalit/corouser.svg)](https://travis-ci.org/zavalit/corouser)
 
 ## Coroutine based server written in php
 
