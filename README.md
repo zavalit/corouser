@@ -12,7 +12,7 @@ Inspired by awesome [nikic aticle](https://nikic.github.io/2012/12/22/Cooperativ
 
 #### Install it per Composer
 
-    composer require --dev zavalit/corouser:dev-mamster
+    composer require --dev zavalit/corouser:dev-master
     
 ##### and boot it
 
