@@ -8,7 +8,7 @@
         }
     ],
     "bin": ["bin/server"],
-    "minimum-stability": "alpha",
+    "minimum-stability": "dev",
     "require": {"php": ">=5.5"},
     "autoload": {
       "psr-4":{
