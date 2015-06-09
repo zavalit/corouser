@@ -7,7 +7,7 @@
 
 #### Preview
 
-Inspired by awesome [nikic aticle](https://nikic.github.io/2012/12/22/Cooperative-multitasking-using-coroutines-in-PHP.html), and is developed mostly for sake of learing a concept of coroutine in php 
+Inspired by awesome [nikic aticle](https://nikic.github.io/2012/12/22/Cooperative-multitasking-using-coroutines-in-PHP.html), and is developed primaraly for the sake of learing a concept of coroutine in php, at this stage it is not for production at all. 
 
 
 #### Install it per Composer
